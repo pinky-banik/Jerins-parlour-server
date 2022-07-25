@@ -23,15 +23,34 @@ async function run (){
         console.log('database connected successfully');
         const database = client.db("Jerins-parlour");
         const servicesCollection = database.collection('Services');
+        const userCollection = database.collection('Users');
  
  
  
-        app.get('/services',async(req,res)=>{
+        app.get('/user',async(req,res)=>{
             const query={};
-            const cursor = servicesCollection.find(query);
+            const cursor = userCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
         })
+
+
+        //user
+
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+              $set: user,
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            // res.send({ result,token});
+            res.send(result);
+        })
+
     }
     finally{
  
