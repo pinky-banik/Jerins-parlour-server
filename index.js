@@ -185,12 +185,130 @@ async function run (){
             res.send(result);
         });
 
+        //orders collection
+
+        app.get("/orders",async(req,res)=>{
+            const orders= await ordersCollection.find().toArray();
+            res.send(orders);
+        })
+
+        
+        app.get("/orders/:email",async(req,res)=>{
+            const email = req.params.email;
+            const filter ={email:email};
+            const orders= await ordersCollection.find(filter).toArray();
+            res.send(orders);
+        })
+        
+        //my history
+        app.get("/history/:email",async(req,res)=>{
+            const email = req.params.email;
+            const status ="Done";
+            const filter ={
+                email:email,
+                status :status,
+
+            };
+            const orders= await ordersCollection.find(filter).toArray();
+            res.send(orders);
+        })
+
+        app.delete("/orders/:id",async(req,res)=>{
+            const id = req.params.id;
+            const filter ={_id:ObjectId(id)};
+            const result= await ordersCollection.deleteOne(filter);
+            res.send(result);
+        })
+
+        // app.put('/orders', async (req, res) => {
+        //     const email = req.query.email;
+        //     const productName = req.query.productName;
+        //     const order = req.body;
+        //     const filter = { 
+        //         email: email,
+        //         productName : productName,
+        //      };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //       $set: order,
+        //     };
+        //     const result = await ordersCollection.updateOne(filter, updateDoc, options);
+        //     // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); 
+        //     // res.send({ result,token});
+        //     res.send(result);
+        // })
+        app.post('/orders', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const order = req.body;
+            // const filter = { 
+            //     _id: (ObjectId(id)),
+            //  };
+            // const updateDoc = {
+            //   $set: {
+            //     paymentStatus: "complete",
+            //     transecionId : order.transecionId,
+            //   },
+            // };
+            // const payments = await paymentCollection.insertOne(payment);
+            const orders = await ordersCollection.insertOne(order);
+            // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); 
+            // res.send({ result,token});
+            res.send(orders);
+        });
+        app.patch('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            // const payment = req.body;
+            const status = req.body.status;
+            const filter = { 
+                _id: (ObjectId(id)),
+             };
+            const updateDoc = {
+              $set: {
+                status: status,
+                // transecionId : order.transecionId,
+              },
+            };
+            // const payments = await paymentCollection.insertOne(payment);
+            const orders = await ordersCollection.updateOne(filter,updateDoc);
+            // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); 
+            // res.send({ result,token});
+            res.send(updateDoc);
+        });
+
+        //client get with email api
+        app.get('/orders/email/productName', async (req, res)=>{
+            let query = {}
+           const email = req.query.email;
+           const productName = req.query.productName;
+           if(email){
+                query = {
+                    email : email,
+                    productName : productName,
+                };
+           }
+            const result =await ordersCollection.findOne(query);
+            res.send(result);
+        });
+        
+
+
         app.get("/paymentOrder/:id",async(req,res)=>{
             const id = req.params.id;
             const filter ={_id:ObjectId(id)};
             const result= await ordersCollection.findOne(filter);
             res.send(result);
         })
+
+        // app.post('/orders', async (req, res) => {
+        //     const order = req.body;
+        //     const result = await ordersCollection.insertOne(order);
+        //     // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); 
+        //     // res.send({ result,token});
+        //     res.send(result);
+        // })
+        
+
         
         app.post("/create-payment-intent", async (req, res) => {
             const service  = req.body;
