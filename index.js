@@ -220,23 +220,6 @@ async function run (){
             res.send(result);
         })
 
-        // app.put('/orders', async (req, res) => {
-        //     const email = req.query.email;
-        //     const productName = req.query.productName;
-        //     const order = req.body;
-        //     const filter = { 
-        //         email: email,
-        //         productName : productName,
-        //      };
-        //     const options = { upsert: true };
-        //     const updateDoc = {
-        //       $set: order,
-        //     };
-        //     const result = await ordersCollection.updateOne(filter, updateDoc, options);
-        //     // const token = jwt.sign({email:email},process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); 
-        //     // res.send({ result,token});
-        //     res.send(result);
-        // })
         app.post('/orders', async (req, res) => {
             const id = req.params.id;
             const payment = req.body;
